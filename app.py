@@ -1,44 +1,50 @@
 import streamlit as st
 import requests
-import google.generativeai as genai
 from PIL import Image
 from dotenv import load_dotenv
 from plant_care import PLANT_CARE
 import os
+
+# -------------------------
+# Page Settings
+# -------------------------
+
 st.set_page_config(
     page_title="GardenGPT",
     page_icon="🌱",
     layout="centered"
 )
 
-# Load environment variables
+# -------------------------
+# Load Environment Variables
+# -------------------------
+
 load_dotenv()
 
-# Configure Gemini
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# -------------------------
+# Sidebar
+# -------------------------
 
-
-# Load Gemini model
-#model = genai.GenerativeModel("gemini-2.0-flash")
-
-# Streamlit UI
-st.title("🌱 GardenGPT")
 with st.sidebar:
 
     st.header("About")
 
-    st.write(
-        """
-        GardenGPT is an AI-powered gardening assistant.
+    st.write("""
+    GardenGPT is an AI-powered gardening assistant.
 
-        It uses:
-        - PlantNet API
-        - Python
-        - Streamlit
+    Built using:
+    - PlantNet API
+    - Python
+    - Streamlit
 
-        Developed by Saif Khan.
-        """
-    )
+    Developed by Saif Khan.
+    """)
+
+# -------------------------
+# Main UI
+# -------------------------
+
+st.title("🌱 GardenGPT")
 
 st.markdown("""
 ### AI-Powered Smart Gardening Assistant
@@ -58,6 +64,10 @@ uploaded_file = st.file_uploader(
     type=["jpg", "jpeg", "png"]
 )
 
+# -------------------------
+# Analysis
+# -------------------------
+
 if uploaded_file is not None:
 
     image = Image.open(uploaded_file)
@@ -70,66 +80,96 @@ if uploaded_file is not None:
 
     if st.button("Analyze Plant 🌿"):
 
-     with st.spinner("GardenGPT is analyzing your plant..."):
+        with st.spinner("GardenGPT is analyzing your plant..."):
 
-        plantnet_key = os.getenv("PLANTNET_API_KEY")
+            plantnet_key = os.getenv("PLANTNET_API_KEY")
 
-        url = f"https://my-api.plantnet.org/v2/identify/all?api-key={plantnet_key}"
+            url = (
+                f"https://my-api.plantnet.org/"
+                f"v2/identify/all?api-key={plantnet_key}"
+            )
 
-        uploaded_file.seek(0)
+            uploaded_file.seek(0)
 
-        files = {
-            "images": uploaded_file
-        }
+            files = {
+                "images": uploaded_file
+            }
 
-        response = requests.post(
-            url,
-            files=files
-        )
+            response = requests.post(
+                url,
+                files=files
+            )
 
-        data = response.json()
+            data = response.json()
 
-        result = data["results"][0]
+            result = data["results"][0]
 
-        plant_name = result["species"]["scientificName"]
-        care_info = PLANT_CARE.get(plant_name)
+            plant_name = result["species"]["scientificName"]
 
-        common_names = result["species"]["commonNames"]
+            common_names = result["species"]["commonNames"]
 
-        family = result["species"]["family"]["scientificName"]
+            family = result["species"]["family"]["scientificName"]
 
-        genus = result["species"]["genus"]["scientificName"]
+            genus = result["species"]["genus"]["scientificName"]
 
-        confidence = result["score"] * 100
+            confidence = result["score"] * 100
 
-        st.success("🌱 Plant Identified!")
+            care_info = PLANT_CARE.get(plant_name)
 
-        with st.container():
+            st.success("🌱 Plant Identified!")
 
-         st.subheader("Plant Information")
+            st.subheader("Plant Information")
 
-         st.write(f"**Scientific Name:** {plant_name}")
+            st.write(
+                f"**Scientific Name:** {plant_name}"
+            )
 
-         st.write(f"**Common Names:** {', '.join(common_names)}")
+            st.write(
+                f"**Common Names:** {', '.join(common_names)}"
+            )
 
-         st.write(f"**Family:** {family}")
+            st.write(
+                f"**Family:** {family}"
+            )
 
-         st.write(f"**Genus:** {genus}")
+            st.write(
+                f"**Genus:** {genus}"
+            )
 
-        st.progress(min(confidence / 100, 1.0))
+            st.progress(
+                min(confidence / 100, 1.0)
+            )
 
-        st.write(f"**Confidence Score:** {confidence:.2f}%")
-    
-    if care_info:
+            st.write(
+                f"**Confidence Score:** {confidence:.2f}%"
+            )
 
-        st.subheader("🌿 Plant Care Guide")
+            if care_info:
 
-        st.write(f"**Water Requirements:** {care_info['water']}")
+                st.subheader("🌿 Plant Care Guide")
 
-        st.write(f"**Sunlight Requirements:** {care_info['sunlight']}")
+                st.write(
+                    f"**Water Requirements:** {care_info['water']}"
+                )
 
-        st.write(f"**Soil Recommendations:** {care_info['soil']}")
+                st.write(
+                    f"**Sunlight Requirements:** {care_info['sunlight']}"
+                )
 
-        st.write(f"**Fertilizer Suggestions:** {care_info['fertilizer']}")
+                st.write(
+                    f"**Soil Recommendations:** {care_info['soil']}"
+                )
 
-        st.write(f"**Fun Fact:** {care_info['fun_fact']}")
+                st.write(
+                    f"**Fertilizer Suggestions:** {care_info['fertilizer']}"
+                )
+
+                st.write(
+                    f"**Fun Fact:** {care_info['fun_fact']}"
+                )
+
+            else:
+
+                st.warning(
+                    "Plant identified, but no care guide exists yet."
+                )
