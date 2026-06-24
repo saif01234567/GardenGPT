@@ -41,14 +41,20 @@ with st.sidebar:
     """)
 
 # -------------------------
-# Main UI
+# Header
 # -------------------------
 
-st.title("🌱 GardenGPT")
-
 st.markdown("""
+# 🌱 GardenGPT
+
 ### AI-Powered Smart Gardening Assistant
 
+Identify plants and receive intelligent care recommendations instantly.
+""")
+
+st.divider()
+
+st.markdown("""
 Upload a plant image and receive:
 
 - Plant Identification
@@ -58,6 +64,10 @@ Upload a plant image and receive:
 - Fertilizer Suggestions
 - Fun Facts
 """)
+
+# -------------------------
+# File Upload
+# -------------------------
 
 uploaded_file = st.file_uploader(
     "Choose a plant image",
@@ -118,22 +128,18 @@ if uploaded_file is not None:
 
             st.success("🌱 Plant Identified!")
 
-            st.subheader("Plant Information")
+            st.markdown("## 🪴 Plant Information")
 
-            st.write(
-                f"**Scientific Name:** {plant_name}"
-            )
+            st.info(
+                f"""
+Scientific Name: {plant_name}
 
-            st.write(
-                f"**Common Names:** {', '.join(common_names)}"
-            )
+Common Names: {', '.join(common_names)}
 
-            st.write(
-                f"**Family:** {family}"
-            )
+Family: {family}
 
-            st.write(
-                f"**Genus:** {genus}"
+Genus: {genus}
+"""
             )
 
             st.progress(
@@ -144,28 +150,28 @@ if uploaded_file is not None:
                 f"**Confidence Score:** {confidence:.2f}%"
             )
 
+            st.markdown("## 🌿 Plant Care Guide")
+
             if care_info:
 
-                st.subheader("🌿 Plant Care Guide")
-
-                st.write(
-                    f"**Water Requirements:** {care_info['water']}"
+                st.success(
+                    f"💧 Water: {care_info['water']}"
                 )
 
-                st.write(
-                    f"**Sunlight Requirements:** {care_info['sunlight']}"
+                st.success(
+                    f"☀️ Sunlight: {care_info['sunlight']}"
                 )
 
-                st.write(
-                    f"**Soil Recommendations:** {care_info['soil']}"
+                st.success(
+                    f"🌱 Soil: {care_info['soil']}"
                 )
 
-                st.write(
-                    f"**Fertilizer Suggestions:** {care_info['fertilizer']}"
+                st.success(
+                    f"🧪 Fertilizer: {care_info['fertilizer']}"
                 )
 
-                st.write(
-                    f"**Fun Fact:** {care_info['fun_fact']}"
+                st.success(
+                    f"✨ Fun Fact: {care_info['fun_fact']}"
                 )
 
             else:
@@ -173,3 +179,13 @@ if uploaded_file is not None:
                 st.warning(
                     "Plant identified, but no care guide exists yet."
                 )
+
+# -------------------------
+# Footer
+# -------------------------
+
+st.divider()
+
+st.caption(
+    "GardenGPT • Built with Python, Streamlit and PlantNet API"
+)
