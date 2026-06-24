@@ -1,5 +1,6 @@
-streamlit
-requests
-python-dotenv
-pillow
-google-generativeai
+# ***NOTE*** -> When downloading the project, run pip install -r requirements.txt in the terminal and get all required libraries automatically.
+streamlit==1.49.0
+requests==2.33.1
+pillow==11.3.0
+python-dotenv==1.1.1
+reportlab==4.4.4
